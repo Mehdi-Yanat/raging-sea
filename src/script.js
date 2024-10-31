@@ -162,11 +162,18 @@ const sound = new THREE.Audio(listener);
 // Create an audio loader
 const audioLoader = new THREE.AudioLoader();
 
+
+
 // Load the audio file
 audioLoader.load('/Sea Waves - Sound Effect.mp3', function (buffer) {
+
+    const setting = {
+        volume: 0.5
+    }
+
     sound.setBuffer(buffer);
     sound.setLoop(true); // Set the audio to loop
-    sound.setVolume(0.5); // Set volume (0 to 1)
+    sound.setVolume(setting.volume); // Set volume (0 to 1)
     sound.play(); // Play the audio
 
     // GUI for audio controls
@@ -174,13 +181,19 @@ audioLoader.load('/Sea Waves - Sound Effect.mp3', function (buffer) {
 
     const audioControls = {
         play: function () {
-            sound.play();
+            if (sound) {
+                sound.play();
+            }
         },
         pause: function () {
-            sound.pause();
+            if (sound) {
+                sound.pause();
+            }
         },
         stop: function () {
-            sound.stop(); // Stop the audio
+            if (sound) {
+                sound.stop(); // Stop the audio
+            }
         },
     };
 
@@ -189,9 +202,10 @@ audioLoader.load('/Sea Waves - Sound Effect.mp3', function (buffer) {
     audioFolder.add(audioControls, 'pause').name('Pause');
     audioFolder.add(audioControls, 'stop').name('Stop');
 
-    // Add volume control
-    audioFolder.add(sound, 'volume', 0, 1).name('Volume').step(0.01);
-    audioFolder.open();
+    audioFolder.add(setting, "volume").name('Volume').min(0).max(1).onChange(value => {
+        sound.setVolume(setting.volume); // Set volume (0 to 1)
+    });
+
 
 }, undefined, function (err) {
     console.error('An error occurred while loading the audio:', err);
